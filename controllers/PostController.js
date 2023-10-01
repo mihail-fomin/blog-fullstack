@@ -3,7 +3,6 @@ import PostModel from '../models/Post.js'
 export const getLastTags = async (req, res) => {
   try {
     const posts = await PostModel.find().limit(5).exec();
-    console.log('posts: ', posts);
 
     const tags = posts.map(tag => tag.tags).flat().slice(0, 5)
 
@@ -38,7 +37,7 @@ export const getOne = async (req, res) => {
       { _id: postId },
       { $inc: { viewsCount: 1 } },
       { returnDocument: 'after', }
-    )
+    ).populate('user')
 
     if (!doc) {
       return res.status(404).json({
