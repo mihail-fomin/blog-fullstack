@@ -1,5 +1,10 @@
 import PostModel from '../models/Post.js'
 
+const handleErrorResponse = (res, error, message) => {
+  console.log(error);
+  res.status(500).json({ message })
+}
+
 export const getLastTags = async (req, res) => {
   try {
     const posts = await PostModel.find().limit(5).exec();
@@ -9,10 +14,7 @@ export const getLastTags = async (req, res) => {
     res.json(tags)
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      message: 'Didn\'t manage to get tags'
-    })
+    handleErrorResponse(res, error, 'Didn\'t manage to get tags')
   }
 }
 
@@ -21,11 +23,7 @@ export const getAll = async (req, res) => {
     const posts = await PostModel.find().populate({ path: 'user', select: ["fullName", "avatarUrl"] });
     res.json(posts)
   } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      message: 'Didn\'t manage to get an article'
-    })
+    handleErrorResponse(res, error, 'Didn\'t manage to get an article')
   }
 }
 
@@ -41,17 +39,13 @@ export const getOne = async (req, res) => {
 
     if (!doc) {
       return res.status(404).json({
-        message: 'An article was not found'
+        message: `An article with id ${postId} was not found`,
       })
     }
 
     res.json(doc)
   } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      message: 'Didn\'t manage to get an article'
-    })
+    handleErrorResponse(res, error, 'Didn\'t manage to get an article')
   }
 }
 
@@ -61,7 +55,7 @@ export const create = async (req, res) => {
       title: req.body.title,
       text: req.body.text,
       imageUrl: req.body.imageUrl,
-      tags: req.body.tags,
+      tags: req.body.tags.split(' '),
       user: req.userId,
     })
 
@@ -69,11 +63,7 @@ export const create = async (req, res) => {
 
     res.json(post)
   } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      message: 'Didn\'t manage to create an article'
-    })
+    handleErrorResponse(res, error, 'Didn\'t manage to create an article')
   }
 }
 
@@ -82,7 +72,7 @@ export const remove = async (req, res) => {
     const postId = req.params.id
     if (!postId) {
       return res.status(404).json({
-        message: 'An article was not found'
+        message: `An article with id ${postId} was not found`,
       })
     }
     const doc = await PostModel.findByIdAndDelete({
@@ -91,7 +81,8 @@ export const remove = async (req, res) => {
 
     if (!doc) {
       return res.status(404).json({
-        message: 'An article was not found'
+        message: 'An article was not found',
+        postId: postId // Включаем информацию о ненайденном ID
       })
     }
 
@@ -99,11 +90,7 @@ export const remove = async (req, res) => {
       success: true
     })
   } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      message: 'Didn\'t manage to remove an article'
-    })
+    handleErrorResponse(res, error, 'Didn\'t manage to remove an article')
   }
 }
 
@@ -117,8 +104,8 @@ export const update = async (req, res) => {
         title: req.body.title,
         text: req.body.text,
         imageUrl: req.body.imageUrl,
+        tags: req.body.tags.split(' '),
         user: req.userId,
-        tags: req.body.tags,
       }
     )
 
@@ -126,10 +113,6 @@ export const update = async (req, res) => {
       success: true
     })
   } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      message: 'Didn\'t manage to update an article'
-    })
+    handleErrorResponse(res, error, 'Didn\'t manage to update an article')
   }
 }
