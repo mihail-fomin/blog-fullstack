@@ -31,7 +31,7 @@ export const getAllMostPopular = async (req, res) => {
   try {
     const posts = await PostModel.find()
       .populate({ path: 'user', select: ["fullName", "avatarUrl"] })
-      .sort({ viewsCount: 1 });
+      .sort({ viewsCount: -1 });
     res.json(posts)
   } catch (error) {
     handleErrorResponse(res, error, 'Didn\'t manage to get articles')
