@@ -18,12 +18,23 @@ export const getLastTags = async (req, res) => {
   }
 }
 
-export const getAll = async (req, res) => {
+export const getAllLatest = async (req, res) => {
   try {
     const posts = await PostModel.find().populate({ path: 'user', select: ["fullName", "avatarUrl"] });
     res.json(posts)
   } catch (error) {
-    handleErrorResponse(res, error, 'Didn\'t manage to get an article')
+    handleErrorResponse(res, error, 'Didn\'t manage to get articles')
+  }
+}
+
+export const getAllMostPopular = async (req, res) => {
+  try {
+    const posts = await PostModel.find()
+      .populate({ path: 'user', select: ["fullName", "avatarUrl"] })
+      .sort({ viewsCount: 1 });
+    res.json(posts)
+  } catch (error) {
+    handleErrorResponse(res, error, 'Didn\'t manage to get articles')
   }
 }
 

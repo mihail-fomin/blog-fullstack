@@ -48,7 +48,18 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
 
 app.get('/tags', PostController.getLastTags)
 
-app.get('/posts', PostController.getAll)
+// app.get('/posts', PostController.getAllLatest)
+
+app.get('/posts', async (req, res) => {
+  const { sort } = req.query;
+
+  if (sort === 'popular') {
+    await PostController.getAllMostPopular(req, res);
+  } else {
+    await PostController.getAllLatest(req, res);
+  }
+});
+
 app.get('/posts/tags', PostController.getLastTags)
 app.get('/posts/:id', PostController.getOne)
 app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create)
