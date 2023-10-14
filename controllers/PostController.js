@@ -1,4 +1,6 @@
 import PostModel from '../models/Post.js'
+// import CommentModel from '../models/Comment.js'
+// import UsertModel from '../models/User.js'
 
 const handleErrorResponse = (res, error, message) => {
   console.log(error);
@@ -47,6 +49,14 @@ export const getOne = async (req, res) => {
       { $inc: { viewsCount: 1 } },
       { returnDocument: 'after', }
     ).populate('user')
+      .populate({
+        path: 'comments',
+        model: 'Comment', // Убедитесь, что это имя модели Comment
+        populate: {
+          path: 'user',
+          model: 'User',
+        },
+      });
 
     if (!doc) {
       return res.status(404).json({

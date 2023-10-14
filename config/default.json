@@ -1,0 +1,3 @@
+{
+  "MONGO_DB_PATH": "mongodb+srv://misha:123@cluster0.azlaous.mongodb.net/?retryWrites=true&w=majority"
+}
